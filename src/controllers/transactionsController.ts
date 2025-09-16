@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { Transaction } from "../types/transaction";
 import { RowDataPacket } from "mysql2";
 import db from "../db";
 
@@ -82,7 +81,6 @@ export const updateTransaction = async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, error: "Invalid transaction type" });
     }
 
-    // Check if transaction exists
     const [existing]: any = await db.query(
       "SELECT * FROM transactions WHERE id = ?",
       [id]
@@ -92,7 +90,6 @@ export const updateTransaction = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Transaction not found" });
     }
 
-    // Update transaction
     await db.query(
       `UPDATE transactions 
        SET type = ?, amount = ?, description = ?, category = ?, updated_at = NOW() 
@@ -100,7 +97,6 @@ export const updateTransaction = async (req: Request, res: Response) => {
       [type, amount, description, category, id]
     );
 
-    // Return updated transaction
     const [updated]: any = await db.query(
       "SELECT * FROM transactions WHERE id = ?",
       [id]
@@ -143,7 +139,6 @@ export const getSummary = async (_: Request, res: Response) => {
       "SELECT SUM(amount) as totalWithdraw FROM transactions WHERE type='withdraw'"
     );
 
-    // depositRows and withdrawRows are arrays of rows
     const totalDeposit = depositRows[0]?.totalDeposit || 0;
     const totalWithdraw = withdrawRows[0]?.totalWithdraw || 0;
 
